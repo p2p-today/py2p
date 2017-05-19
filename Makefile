@@ -82,6 +82,7 @@ python2: LICENSE setup.py
 	@echo "Building python-only version..."
 	@$(python2) setup.py build --universal
 
+ifeq ($(pypy), True)
 ## Build python-only code for whatever your system pypy version is
 pypy: LICENSE setup.py
 	@echo "Checking dependencies..."
@@ -89,6 +90,10 @@ pypy: LICENSE setup.py
 	@pypy $(pip) -r requirements.txt --upgrade $(user_postfix)
 	@echo "Building python-only version..."
 	@pypy setup.py build --universal
+else
+pypy:
+	@echo "You do not have pypy installed"
+endif
 
 ifeq ($(pypy), True)
 cpython: python
@@ -208,4 +213,4 @@ clean:
 	py_src/test/__pycache__ py_src/*.pyc py_src/test/*.pyc py_src/*.so
 
 ## Run all python-related build recipes
-all: LICENSE setup.py setup.cfg python2 python3 html cpython2 cpython3 pypy
+all: LICENSE setup.py setup.cfg python2 python3 cpython2 cpython3 pypy
