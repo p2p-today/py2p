@@ -9,7 +9,7 @@ try:
 except ImportError:
     from distutils.core import setup, Extension
 
-from py_src import __version__
+__version__ = "0.7.871"
 
 # Set up the long_description
 
