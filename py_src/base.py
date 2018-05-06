@@ -50,7 +50,7 @@ class Protocol(
 
     @property
     def id(self):
-        # type: (Protocol) -> str
+        # type: (Protocol) -> bytes
         """The SHA-256-based ID of the Protocol"""
         h = sha256(''.join(str(x) for x in self).encode())
         h.update(protocol_version.encode())
@@ -219,8 +219,8 @@ class BaseConnection(object):
                 respond = (self.compression != encoded_methods)
                 self.compression = list(cast(Iterable[int], encoded_methods))
                 self.__print__(
-                    "Compression methods changed to: %s" %
-                    repr(self.compression),
+                    "Compression methods changed to: %s" % repr(
+                        self.compression),
                     level=2)
                 if respond:
                     self.send(flags.renegotiate, flags.compression,
@@ -279,9 +279,9 @@ class BaseDaemon(object):
         self.sock.settimeout(0.1)
         self.exceptions = []  # type: List[str]
         self.alive = True
-        self._logger = getLogger(
-            '{}.{}.{}'.format(self.__class__.__module__,
-                              self.__class__.__name__, self.server.id))
+        self._logger = getLogger('{}.{}.{}'.format(self.__class__.__module__,
+                                                   self.__class__.__name__,
+                                                   self.server.id))
         self.main_thread = current_thread()
         self.daemon = Thread(target=self.mainloop)
         self.daemon.start()
@@ -315,8 +315,8 @@ class BaseDaemon(object):
         except TimeoutException:  # pragma: no cover
             return  # Shouldn't happen with select, but if it does...
         except Exception as e:
-            if (isinstance(e, SocketException) and
-                    e.args[0] in (9, 104, 10053, 10054, 10058)):
+            if (isinstance(e, SocketException)
+                    and e.args[0] in (9, 104, 10053, 10054, 10058)):
                 node_id = repr(handler.id or handler)
                 self.__print__(
                     "Node %s has disconnected from the network" % node_id,
@@ -398,9 +398,9 @@ class BaseSocket(EventEmitter, object):
             self.out_addr = get_lan_ip(), port
         else:
             self.out_addr = addr, port
-        info = (str(self.out_addr).encode(), prot.id.encode(), user_salt)
+        info = (str(self.out_addr).encode(), prot.id, user_salt)
         h = sha384(b''.join(info))
-        self.id = b58encode_int(int(h.hexdigest(), 16)).encode()  # type: bytes
+        self.id = b58encode_int(int(h.hexdigest(), 16))  # type: bytes
         self._logger = getLogger('{}.{}.{}'.format(
             self.__class__.__module__, self.__class__.__name__, self.id))
         self.__handlers = [
@@ -478,8 +478,8 @@ class BaseSocket(EventEmitter, object):
                 ValueError: If the method signature doesn't parse correctly
             """
             args = inspect.getargspec(method)
-            if (args[1:] != (None, None, None) or
-                    len(args[0]) != (3 if args[0][0] == 'self' else 2)):
+            if (args[1:] != (None, None, None)
+                    or len(args[0]) != (3 if args[0][0] == 'self' else 2)):
                 raise ValueError(
                     "This method must contain exactly two arguments "
                     "(or three if first is self)")
