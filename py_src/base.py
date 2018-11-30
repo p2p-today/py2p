@@ -307,7 +307,8 @@ class BaseDaemon(object):
                     self.__print__(
                         "disconnecting node %s while in loop" % handler.id,
                         level=6)
-                    self.server.disconnect(handler)
+                    # disabling disconnect() here to prevent all peers from disconnecting if one disconnects (python3)
+                    # self.server.disconnect(handler)
                     self.server.request_peers()
                     return
             while handler.find_terminator():
@@ -331,7 +332,8 @@ class BaseDaemon(object):
                     level=0)
                 self.__print__("This exception was: {}".format(e), level=1)
                 self.exceptions.append(format_exc())
-            self.server.disconnect(handler)
+            # disabling disconnect() here to prevent all peers from disconnecting if one disconnects (python3)
+            # self.server.disconnect(handler)
             self.server.request_peers()
 
     def __del__(self):
